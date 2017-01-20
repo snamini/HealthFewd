@@ -1,29 +1,92 @@
-var connection = require("./connection.js");
+// Import MySQL connection.
+var connection = require("../config/connection.js");
 
-// Object Relational Mapper (ORM)
-// RESEARCH HOW TO DEFINE THE FUNCTIONS???
+// Helper function for SQL syntax.
+function printQuestionMarks(num) {
+  var arr = [];
 
+  for (var i = 0; i < num; i++) {
+    arr.push("?");
+  }
+
+  return arr.toString();
+}
+
+// Helper function for SQL syntax.
+function objToSql(ob) {
+  var arr = [];
+
+  for (var key in ob) {
+    if (Object.hasOwnProperty.call(ob, key)) {
+      arr.push(key + "=" + ob[key]);
+    }
+  }
+
+  return arr.toString();
+}
+
+// Object for all our SQL statement functions.
 var orm = {
-  selectAll: function(tableInput, colToSearch, valOfCol) {
-    var queryString = "SELECT * FROM ?? ALL ?? = ?";
-    connection.query(queryString, [tableInput, colToSearch, valOfCol], function(err, result) {
-      console.log(result);
+  all: function(tableInput, cb) {
+    var queryString = "SELECT * FROM " + tableInput + ";";
+    connection.query(queryString, function(err, result) {
+      if (err) {
+        throw err;
+      }
+      cb(result);
     });
   },
-  insertOne: function(whatToSelect, table, orderCol, orderBy) {
-    var queryString = "SELECT ?? FROM ?? ORDER BY ? ?";
-    console.log(queryString);
-    connection.query(queryString, [whatToSelect, table, orderCol, orderBy], function(err, result) {
-      console.log(result);
-    });
-  },
-  updateOne: function(tableOneCol, tableTwoForeignKey, tableOne, tableTwo) {
-    var queryString = "SELECT ??, COUNT(??) AS count FROM ?? LEFT JOIN ?? ON ??.??= ??.id GROUP BY ?? ORDER BY count DESC LIMIT 1";
+  create: function(table, cols, vals, cb) {
+    var queryString = "INSERT INTO " + table;
 
-    connection.query(queryString, [tableOneCol, tableOneCol, tableOne, tableTwo, tableTwo, tableTwoForeignKey, tableOne, tableOneCol], function(err, result) {
-      console.log(result);
+    queryString += " (";
+    queryString += cols.toString();
+    queryString += ") ";
+    queryString += "VALUES (";
+    queryString += printQuestionMarks(vals.length);
+    queryString += ") ";
+
+    console.log(queryString);
+
+    connection.query(queryString, vals, function(err, result) {
+      if (err) {
+        throw err;
+      }
+      cb(result);
+    });
+  },
+  // An example of objColVals would be {name: panther, sleepy: true}
+  update: function(table, objColVals, condition, cb) {
+    var queryString = "UPDATE " + table;
+
+    queryString += " SET ";
+    queryString += objToSql(objColVals);
+    queryString += " WHERE ";
+    queryString += condition;
+
+    console.log(queryString);
+    connection.query(queryString, function(err, result) {
+      if (err) {
+        throw err;
+      }
+
+      cb(result);
+    });
+  },
+  delete: function(table, condition, cb) {
+    var queryString = "DELETE FROM " + table;
+    queryString += " WHERE ";
+    queryString += condition;
+
+    connection.query(queryString, function(err, result) {
+      if (err) {
+        throw err;
+      }
+
+      cb(result);
     });
   }
 };
 
+// Export the orm object for the model (cat.js).
 module.exports = orm;

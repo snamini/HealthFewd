@@ -20,3 +20,14 @@ connection.connect(function(err) {
 
 // Export connection for our ORM to use.
 module.exports = connection;
+
+
+
+// var Sequelize = require("sequelize");
+
+// 
+// in routes (controller): connected to Sequelize:
+//
+// Chirp.findAll
+//
+// ^findAll is refering to sequalize

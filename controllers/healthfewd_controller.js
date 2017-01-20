@@ -1,39 +1,55 @@
 var express = require("express");
 
-var router = express.Router();
+var app = express.Router();
+// Import the model (healthFewd.js) to use its database functions.
+var healthFewd = require("../models/healthFewd.js");
 
-// Import the model (cat.js) to use its database functions.
-var cat = require("../models/healthfewd.js");
-
-connection.connect(function(err) {
-  if (err) {
-    console.error("error connecting: " + err.stack);
-    return;
-  }
-
-  console.log("connected as id " + connection.threadId);
-
-});
-
+// Create all our routes and set up logic within those routes where required.
 app.get("/", function(req, res) {
-  connection.query("SELECT * FROM options;", function(err, data) {
-    if (err) {
-      throw err;
-    }
+  res.redirect("/healthFewds");
+  console.log("it worked!");
 
-    res.render("index", { options: data });
+});
 
+app.get("/healthFewds", function(req, res) {
+  healthFewd.all(function(data) {
+    var hbsObject = {
+      data: data
+    };
+    console.log(hbsObject);
+    res.render("index", hbsObject);
   });
 });
 
-app.post("/create", function(req, res) {
-  connection.query("INSERT INTO options (foodname) VALUES (?)", [req.body.foodname], function(err, result) {
-    if (err) {
-      throw err;
-    }
-    res.redirect("/");
+app.post("/healthFewds/create", function(req, res) {
+  healthFewd.create([
+    "foodname", "devoured"
+  ], [
+    req.body.foodname, req.body.devoured
+  ], function() {
+    res.redirect("/healthFewds");
   });
 });
-//
-// // Export routes for server.js to use.
-// module.exports = router;
+
+app.put("/healthFewds/update/:id", function(req, res) {
+  var condition = "id = " + req.params.id;
+
+  console.log("condition", condition);
+
+  healthFewd.update({
+    devour: req.body.devour
+  }, condition, function() {
+    res.redirect("/healthFewds");
+  });
+});
+
+app.delete("/healthFewds/delete/:id", function(req, res) {
+  var condition = "id = " + req.params.id;
+
+  healthFewd.delete(condition, function() {
+    res.redirect("/healthFewds");
+  });
+});
+
+// Export routes for server.js to use.
+module.exports = app;
