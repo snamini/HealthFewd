@@ -1,29 +1,26 @@
 // Import the ORM to create functions that will interact with the database.
+
+// controller >> model >> ORM >> database, >> database >>ORM >> model >> controller >> view
+
 var orm = require("../config/orm.js");
 
 var healthFewd = {
-  all: function(cb) {
-    orm.all("options", function(res) {
-      cb(res);
+  all: function(callback) {
+    orm.all("options", function(response) {
+      callback(response);
     });
   },
-  // The variables cols and vals are arrays.
-  create: function(cols, vals, cb) {
-    orm.create("options", cols, vals, function(res) {
-      cb(res);
+  // The variables columns and vals are arrays.
+  create: function(columns, values, callback) {
+    orm.create("options", columns, vals, function(response) {
+      callback(response);
     });
   },
-  update: function(objColVals, condition, cb) {
-    orm.update("options", objColVals, condition, function(res) {
-      cb(res);
+  update: function(objColVals, condition, callback) {
+    orm.update("options", objColVals, condition, function(response) {
+      callback(response);
     });
   },
-  delete: function(condition, cb) {
-    orm.delete("options", condition, function(res) {
-      cb(res);
-    });
-  }
-};
 
 // Export the database functions for the controller (optionsController.js).
 module.exports = healthFewd;
