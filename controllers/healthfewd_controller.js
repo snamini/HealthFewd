@@ -1,8 +1,8 @@
 var express = require("express");
 
-var router = express.Router();
+var app = express.Router();
 // Import the model (cat.js) to use its database functions.
-var cat = require("../models/healthFewd.js");
+var healthFewd = require("../models/healthFewd.js");
 
 // Create all our routes and set up logic within those routes where requestuired.
 app.get("/", function(request, response) {

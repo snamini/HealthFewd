@@ -12,7 +12,7 @@ var healthFewd = {
   },
   // The variables columns and vals are arrays.
   create: function(columns, values, callback) {
-    orm.create("options", columns, vals, function(response) {
+    orm.create("options", columns, values, function(response) {
       callback(response);
     });
   },
@@ -20,7 +20,8 @@ var healthFewd = {
     orm.update("options", objColVals, condition, function(response) {
       callback(response);
     });
-  },
+  }
+};
 
 // Export the database functions for the controller (optionsController.js).
 module.exports = healthFewd;
